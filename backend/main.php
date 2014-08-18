@@ -1,5 +1,5 @@
 <?php
-include '../config.php';
+include '../../config.php';
 // TODO handle post/get data from the front end.
 if(isset($_POST["data"])){
 	$data = json_decode($_POST["data"]);

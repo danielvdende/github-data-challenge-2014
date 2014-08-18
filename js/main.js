@@ -101,7 +101,7 @@ function parseMatrix(finals,totals){
   // category20 works perfectly here, using 20 languages :)
   var fill = d3.scale.category20();
 
-  var svg = d3.select("body").append("svg")
+  var svg = d3.select("#vis3").append("svg")
   .attr("width", width)
   .attr("height", height)
   .append("g")

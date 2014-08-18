@@ -4,6 +4,9 @@
         <title>Github visualization</title>
     </head>
     <style>
+    html {
+        font-family: sans-serif;
+    }
     .chord path {
       fill-opacity: .67;
       stroke: #000;
@@ -46,10 +49,19 @@
     .pie_arc path {
       stroke: #fff;
     }
+
     </style>
 
     <body>
-        <section class="visSection">
+        <section class="visSection" id="vis1">
+            <h1>
+                User Cards
+            </h1>
+            <section>
+                <label>Username:<input type="text" name="username" value="" placeholder="Username" id="usernameField"></label>
+                <button id="usernameSearch">Find User</button>
+            </section>
+
             <section id="usercard">
                 <section class="cardRow grid">
                     <img src="img/js.png" class="unit one-fifth cardImage" id="javascriptImg">
@@ -81,34 +93,42 @@
                 </section>
             </section>
             <div id="tooltip"></div>
-            <section>
-                <label>Username:<input type="text" name="username" value="" placeholder="Username" id="usernameField"></label>
-                <button id="usernameSearch">Find User</button>
-            </section>
         </section>
 
-        <section class="visSection">
-            <section>
-                <label>JavaScript<input type="checkbox" name="" value="javascript" class="languageCheck"></label>
-                <label>Java<input type="checkbox" name="" value="java" class="languageCheck"></label>
-                <label>CSS<input type="checkbox" name="" value="css" class="languageCheck"></label>
-                <label>C++<input type="checkbox" name="" value="cp" class="languageCheck"></label>
-                <label>Python<input type="checkbox" name="" value="python" class="languageCheck"></label>
-                <label>C#<input type="checkbox" name="" value="c#" class="languageCheck"></label>
-                <label>C<input type="checkbox" name="" value="c" class="languageCheck"></label>
-                <label>Clojure<input type="checkbox" name="" value="clojure" class="languageCheck"></label>
-                <label>CoffeeScript<input type="checkbox" name="" value="coffeescript" class="languageCheck"></label>
-                <label>Go<input type="checkbox" name="" value="go" class="languageCheck"></label>
-                <label>Haskell<input type="checkbox" name="" value="haskell" class="languageCheck"></label>
-                <label>Lua<input type="checkbox" name="" value="lua" class="languageCheck"></label>
-                <label>Objective-C<input type="checkbox" name="" value="objective-c" class="languageCheck"></label>
-                <label>Perl<input type="checkbox" name="" value="perl" class="languageCheck"></label>
-                <label>PHP<input type="checkbox" name="" value="php" class="languageCheck"></label>
-                <label>Prolog<input type="checkbox" name="" value="prolog" class="languageCheck"></label>
-                <label>VimL<input type="checkbox" name="" value="viml" class="languageCheck"></label>
-                <label>Ruby<input type="checkbox" name="" value="ruby" class="languageCheck"></label>
-                <label>Scala<input type="checkbox" name="" value="scala" class="languageCheck"></label>
-                <label>Shell<input type="checkbox" name="" value="shell" class="languageCheck"></label>
+        <section class="visSection" id="vis2">
+            <h1>
+                Search by Language
+            </h1>
+            <section class="grid">
+                <section class="unit one-fifth">
+                    <label><input type="checkbox" name="" value="javascript" class="languageCheck">JavaScript</label>
+                    <label><input type="checkbox" name="" value="java" class="languageCheck">Java</label>
+                    <label><input type="checkbox" name="" value="css" class="languageCheck">CSS</label>
+                    <label><input type="checkbox" name="" value="cp" class="languageCheck">C++</label>
+                    <label><input type="checkbox" name="" value="python" class="languageCheck">Python</label>
+                </section>
+                <section class="unit one-fifth">
+                    <label><input type="checkbox" name="" value="c#" class="languageCheck">C#</label>
+                    <label><input type="checkbox" name="" value="c" class="languageCheck">C</label>
+                    <label><input type="checkbox" name="" value="clojure" class="languageCheck">Clojure</label>
+                    <label><input type="checkbox" name="" value="coffeescript" class="languageCheck">CoffeeScript</label>
+                    <label><input type="checkbox" name="" value="go" class="languageCheck">Go</label>
+                </section>
+                <section class="unit one-fifth">
+                    <label><input type="checkbox" name="" value="haskell" class="languageCheck">Haskell</label>
+                    <label><input type="checkbox" name="" value="lua" class="languageCheck">Lua</label>
+                    <label><input type="checkbox" name="" value="objective-c" class="languageCheck">Objective-C</label>
+                    <label><input type="checkbox" name="" value="perl" class="languageCheck">Perl</label>
+                    <label><input type="checkbox" name="" value="php" class="languageCheck">PHP</label>
+
+                </section>
+                <section class="unit one-fifth">
+                    <label><input type="checkbox" name="" value="prolog" class="languageCheck">Prolog</label>
+                    <label><input type="checkbox" name="" value="viml" class="languageCheck">VimL</label>
+                    <label><input type="checkbox" name="" value="ruby" class="languageCheck">Ruby</label>
+                    <label><input type="checkbox" name="" value="scala" class="languageCheck">Scala</label>
+                    <label><input type="checkbox" name="" value="shell" class="languageCheck">Shell</label>
+                </section>
             </section>
             <button id="languageSearch">Find Users with these skills</button>
             <div id="languageUserSearch">
@@ -124,7 +144,11 @@
                 </tbody>
             </table>
         </section>
-        
+        <section class="visSection" id="vis3">
+            <h1>
+                Overall
+            </h1>
+        </section>
         
 
     </body>
