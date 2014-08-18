@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Github visualization</title>
+    </head>
+    <style>
+    .chord path {
+      fill-opacity: .67;
+      stroke: #000;
+      stroke-width: .5px;
+    }
+
+    #tooltip {
+      color: white;
+      opacity: .9;
+      background: #333;
+      padding: 5px;
+      border: 1px solid lightgrey;
+      border-radius: 5px;
+      position: absolute;
+      z-index: 10;
+      visibility: hidden;
+      white-space: nowrap;
+      pointer-events: none;
+      font-size: 13px;
+    }
+
+    .cardRow {
+        width:50%;
+    }
+
+    .cardRow img {
+        opacity:0.1;
+    }
+
+    .visSection {
+      border-bottom: 1px solid #ccc;
+      padding: 10px 0px;
+    }
+
+    #languageSearchResults {
+        width:100%;
+        border:1px solid #ccc;
+    }
+
+    .pie_arc path {
+      stroke: #fff;
+    }
+    </style>
+
+    <body>
+        <section class="visSection">
+            <section id="usercard">
+                <section class="cardRow grid">
+                    <img src="img/js.png" class="unit one-fifth cardImage" id="javascriptImg">
+                    <img src="img/java.jpg" class="unit one-fifth cardImage" id="javaImg">
+                    <img src="img/css.svg" class="unit one-fifth cardImage" id="cssImg">
+                    <img src="img/c++.png" class="unit one-fifth cardImage" id="c++Img">
+                    <img src="img/python.jpg" class="unit one-fifth cardImage" id="pythonImg">
+                </section>
+                <section class="cardRow grid">
+                    <img src="img/c-sharp.png" class="unit one-fifth cardImage" id="c#Img">
+                    <img src="img/c.jpg" class="unit one-fifth cardImage" id="cImg">
+                    <img src="img/clojure.jpg" class="unit one-fifth cardImage" id="clojureImg">
+                    <img src="img/coffeescript.png" class="unit one-fifth cardImage" id="coffeescriptImg">
+                    <img src="img/go.jpg" class="unit one-fifth cardImage" id ="goImg">
+                </section>
+                <section class="cardRow grid">
+                    <img src="img/haskell.jpg" class="unit one-fifth cardImage" id="haskellImg">
+                    <img src="img/lua.jpg" class="unit one-fifth cardImage" id="luaImg">
+                    <img src="img/objective-c.jpg" class="unit one-fifth cardImage" id="objective-cImg">
+                    <img src="img/perl.jpg" class="unit one-fifth cardImage" id="perlImg">
+                    <img src="img/php.jpg" class="unit one-fifth cardImage" id="phpImg">
+                </section>
+                <section class="cardRow grid">
+                    <img src="img/prolog.jpg" class="unit one-fifth cardImage" id="prologImg">
+                    <img src="img/vim.jpg" class="unit one-fifth cardImage" id = "vimlImg">
+                    <img src="img/ruby.png" class="unit one-fifth cardImage" id="rubyImg">
+                    <img src="img/scala.png" class="unit one-fifth cardImage" id="scalaImg">
+                    <img src="img/shell.png" class="unit one-fifth cardImage" id="shellImg">
+                </section>
+            </section>
+            <div id="tooltip"></div>
+            <section>
+                <label>Username:<input type="text" name="username" value="" placeholder="Username" id="usernameField"></label>
+                <button id="usernameSearch">Find User</button>
+            </section>
+        </section>
+
+        <section class="visSection">
+            <section>
+                <label>JavaScript<input type="checkbox" name="" value="javascript" class="languageCheck"></label>
+                <label>Java<input type="checkbox" name="" value="java" class="languageCheck"></label>
+                <label>CSS<input type="checkbox" name="" value="css" class="languageCheck"></label>
+                <label>C++<input type="checkbox" name="" value="cp" class="languageCheck"></label>
+                <label>Python<input type="checkbox" name="" value="python" class="languageCheck"></label>
+                <label>C#<input type="checkbox" name="" value="c#" class="languageCheck"></label>
+                <label>C<input type="checkbox" name="" value="c" class="languageCheck"></label>
+                <label>Clojure<input type="checkbox" name="" value="clojure" class="languageCheck"></label>
+                <label>CoffeeScript<input type="checkbox" name="" value="coffeescript" class="languageCheck"></label>
+                <label>Go<input type="checkbox" name="" value="go" class="languageCheck"></label>
+                <label>Haskell<input type="checkbox" name="" value="haskell" class="languageCheck"></label>
+                <label>Lua<input type="checkbox" name="" value="lua" class="languageCheck"></label>
+                <label>Objective-C<input type="checkbox" name="" value="objective-c" class="languageCheck"></label>
+                <label>Perl<input type="checkbox" name="" value="perl" class="languageCheck"></label>
+                <label>PHP<input type="checkbox" name="" value="php" class="languageCheck"></label>
+                <label>Prolog<input type="checkbox" name="" value="prolog" class="languageCheck"></label>
+                <label>VimL<input type="checkbox" name="" value="viml" class="languageCheck"></label>
+                <label>Ruby<input type="checkbox" name="" value="ruby" class="languageCheck"></label>
+                <label>Scala<input type="checkbox" name="" value="scala" class="languageCheck"></label>
+                <label>Shell<input type="checkbox" name="" value="shell" class="languageCheck"></label>
+            </section>
+            <button id="languageSearch">Find Users with these skills</button>
+            <div id="languageUserSearch">
+            </div>
+            <table id="languageSearchResults">
+                <caption>Users with these language skills</caption>
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                    </tr>
+                </thead>
+                <tbody id="languageSearchResultsBody">
+                </tbody>
+            </table>
+        </section>
+        
+        
+
+    </body>
+    <link rel="stylesheet" href="css/gridism.css">
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="js/main.js"></script>
+</html>
