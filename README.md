@@ -20,4 +20,4 @@ Now perform the following steps:
 4.  Enjoy the visualization by firing up ```index.html``` :)
 
 ## License & credits
-This entry was built by [Daniel van der Ende](https://danielvdende.com). It is licensed under the MIT License
+This entry was built by [Daniel van der Ende](https://danielvdende.com). It is licensed under the [MIT License](https://github.com/danielvdende/github-data-challenge-2014/blob/master/LICENSE)
