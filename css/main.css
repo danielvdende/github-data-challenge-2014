@@ -1,0 +1,94 @@
+html {
+  font-family: sans-serif;
+}
+body {
+  max-width:1000px;
+  margin-left:auto;
+  margin-right:auto;
+}
+.chord path {
+  fill-opacity: .67;
+  stroke: #000;
+  stroke-width: .5px;
+}
+
+#tooltip {
+  color: white;
+  opacity: .9;
+  background: #333;
+  padding: 5px;
+  border: 1px solid lightgrey;
+  border-radius: 5px;
+  position: absolute;
+  z-index: 10;
+  visibility: hidden;
+  white-space: nowrap;
+  pointer-events: none;
+  font-size: 13px;
+}
+
+
+
+.cardRow section {
+    opacity:0.1;
+}
+
+.visSection {
+  border-top: 1px solid #ccc;
+  padding: 10px 0px;
+}
+
+#languageSearchResults {
+    /*border:1px solid #ccc;*/
+    display:none;
+}
+
+.pie_arc path {
+  stroke: #fff;
+}
+
+.cardImage {
+    width:80px;
+    margin-left:auto;
+    margin-right:auto;
+    display:block;
+}
+
+.cardTitle {
+    text-align:center;
+    font-weight: bold;
+}
+
+input {
+    padding:10px;
+    border:1px solid #ccc;
+    border-radius: 3px;
+}
+
+button {
+    padding:10px 20px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius:3px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #d3d3d3;
+}
+
+.langSelected {
+    color: #2ecc71;
+    opacity:1 !important;
+}
+
+tr>td{
+    padding:10px;
+    border-top:1px #d3d3d3 solid;
+}
+
+tr:hover{
+    background-color: #d3d3d3;
+    cursor:pointer;
+}
+

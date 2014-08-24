@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Github Visualization</title>
+	    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1">
+	    <link rel="stylesheet" href="css/main.css">
+	</head>
+	<body>
+		<h1>About GitHub User-Language Visualization</h1>
+			<p>This page will give some more information on my entry for the GitHub Data Challenge 2014, which can be found <a href="index.html">here</a>.</p>
+		<h2>Why?</h2>
+			<p>An important question when discussing anything is why. The motivation behind my entry was really to figure out whether particular combinations of languages were prevalent on GitHub. By that I mean whether there is a closer relationship, for example, between PHP and JavaScript (which are often used prolifically in web development) than between other languages. These relationships give some sense of the developers using those languages, and also their behavior on GitHub. Moreover, the visualizations and data analysis also give you some idea if the developer you are looking for even exists :). 
+			</p>
+
+			<p>In order to achieve this, I decided to create three data analysis types, which give the user an overall view, a per-user view, and a per language combination view, respectively. I will briefly discuss the data acquisition process, and I will give a short discussion per visualization too.
+			</p>
+		<h2>Data Acquisition</h2>
+			<p>The data acquistion process was vital for this project. The goal was to be able to indicate per user, whether or not he/she knew a particular programming language. In order to keep the number of languages somewhat limited, I decided to look at only the top 20 languages (based on <a href="http://adambard.com/blog/top-github-languages-for-2013-so-far/">this list</a>). GitHub suggested several ways to acquire the data that could be used to create the entries for this competition. I very quickly found, however, that due to the approximately 3 million users, the only feasible solution was the use of Google BigQuery. The GitHub API is (sensibly) limited to 5000 requests per hour. This would mean approximately 600 hours of full speed querying. Google BigQuery offered me the capability to do near real-time querying on the GitHub data.</p>
+
+			<p>The data I wanted to use should have indicated per user whether or not he/she can 'speak' a given programming language. An optimal solution would have been to analyze every commit made by a user. However, this would have led to huge computation load, as the commit object in the GitHub API does not currently contain the language breakdown when a list of commits is fetched (<a href="https://developer.github.com/v3/repos/commits/#list-commits-on-a-repository" title="GitHub API">https://developer.github.com/v3/repos/commits/#list-commits-on-a-repository</a>). Because of this, I very quickly realized it would not be possible to analyze each user's full language skills. However, per repository attributed to a user, it was easily possible to obtain the language of the repository. To give some idea of the amount of data processing needed, even Google BigQuery took over a minute to execute this query!) I used the following BigQuery query to fetch the data 
+			<code>
+				<p>	SELECT repository_owner, repository_language <br />
+					FROM [githubarchive:github.timeline] <br />
+					WHERE repository_language!='null' <br />
+					GROUP BY repository_owner, repository_language</p>
+			</code>
+			Basically, this query returns two columns. For each repository, I fetch the language and the repository owner. Following this, I downloaded the dataset and started handling the results. For each line, which was structured as follows:
+			<code>
+				<p>USERNAME, LANGUAGE</p>
+			</code>
+			I fetched the line, and inserted a row into a custom MySQL database. For each user, a row is maintained in this database, with 20 columns, each symbolizing a programming language. If the BigQuery results contained a repository by user A in language B, the column B for user A will be set to 1, indicating user A knows language B. Otherwise, the column defaults to 0. In this way, I can easily query my database to find out if a user speaks a particular language.
+			</p>
+		<h2>Visualization 1</h2>
+			<p>
+			Visualization 1 is a chord diagram, which indicates the relationship between all possible combinations of programming languages. This data was computed by creating all possible pairs that could be created using the list of 20 languages I have analyzed. By analyzing the combinations, and the number of users that speak both of the languages in question, we get a good idea of what languages are spoken most, but also which languages are 'spoken' quite a lot, but not in combination. It gives a different perspective of the user-language landscape on GitHub.
+			</p>
+		<h2>Visualization 2</h2>
+			<p>Visualization 2 makes direct use of the structure of the MySQL database I described in the section above. It allows you to search for a particular username and find out which languages this users speaks. While not very revolutionary, it is a very natural and logical way to query the data I obtained.
+			</p>
+		<h2>Visualization 3</h2>
+			<p>
+				Visualization 3 is the exact inverse of the second visualization. It offers you the capability of finding users that speak a given combination of languages. This may be useful if you're looking for a specific skillset for a project, and are looking for someone to help you out.
+			</p>
+
+		<h2>Assumptions &amp; Future Work</h2>
+			<p>Like any project, this project also has a number of flaws. The main one is naturally the fact that all statistics are based on the dominant language of every repository. This means that if a user has contributed actively to a project of language A, but has no repos of their own in this language, we will think that this user does not speak language A. This is a serious flaw, which sadly I was unable to solve in time for the entry deadline of the GitHub Data Challenge. It should be noted, however, that if a user is passionate/proficient in a particular language, one would expect this user to have repositories where this language is the dominant language.
+			</p>
+			<p>Apart from missing the languages of the commits, it should also be noted that if a repository contains multiple languages, this system only takes the dominant one into account. Similarly to the interface GitHub itself provides, a repository is marked as a 'Language A' repository based on the dominant language. While this gives a good high-level overview, it is somewhat detrimental to overall accuracy.</p>
+
+		<h2>Feedback</h2>
+			<p>Any feedback on my work is more than welcome. I really enjoy discussing development work with others, and I would love to hear your ideas about my work, or suggestions/critism :). Hit me up on <a href="https://twitter.com/danielvdende" title="Twitter">Twitter</a> or through <a href="https://danielvdende.com/contact.html">my website</a></p>
+	</body>
+</html>
