@@ -1,5 +1,5 @@
 <?php
-include '../../config.php';
+include 'config.php';
 if(isset($_POST["data"])){
 	$data = json_decode($_POST["data"]);
 	if($data->callType == "init"){
@@ -32,9 +32,10 @@ function fetch_chord_data(){
 	global $dbpass;
 	$dbhost = "localhost";
 	$dbname = "github_vis";
-	$dbh = new PDO("mysql:host=$dbhost;dbname=$dbname", $dbuser, $dbpass);	
-	$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+	$dbh = new PDO("mysql:host=$dbhost;dbname=$dbname", $dbuser, $dbpass);	
+
+	$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	$sql = "SELECT * FROM `cross-languages`";
 	try{
 		$final = [];
@@ -167,7 +168,9 @@ function fetch_users_by_languages_limited($languages){
 		echo "db fetch error" . $e . "\n";
 	}
 }
-
+// echo "HELLO";
+// fetch_chord_data();
+// echo "bye";
 // fetch_user_data("007lva");
 
 // fetch_users_by_languages_limited(["javascript"]);
