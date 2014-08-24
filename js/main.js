@@ -56,7 +56,9 @@ function initialize(){
   request.onload = function() {
       if (request.status >= 200 && request.status < 400){
         data = JSON.parse(request.responseText);
+        console.log(data);
         parseMatrix(data.final, data.totals);
+          document.getElementById("vis3Loader").style.display="none";
 } else {
     // We reached our target server, but it returned an error
     console.log("Oh noesz");
@@ -91,8 +93,8 @@ function parseMatrix(finals,totals){
   .sortSubgroups(d3.descending)
   .matrix(matrix);
 
-  var width = 960,
-  height = 1000,
+  var width = 1000,
+  height = 1100,
   innerRadius = Math.min(width, height) * .41,
   outerRadius = innerRadius * 1.1;
   r1 = innerRadius;
@@ -222,13 +224,15 @@ document.getElementById("usernameSearch").addEventListener("click", function(){
         if (request.status >= 200 && request.status < 400){
             var data = JSON.parse(request.responseText);
             console.log(data);
-            var elements = document.getElementsByClassName("cardImage");
+            var elements = document.getElementsByClassName("cardSec");
             for (var i = elements.length - 1; i >= 0; i--) {
                 elements[i].style.opacity = 0.1;
+                elements[i].style.color = "#000";
             };
             for (var i = data.length - 1; i >= 0; i--) {
-                console.log(data[i] + "Img");
-                document.getElementById(data[i] + "Img").style.opacity = 1;
+                document.getElementById(data[i] + "Sec").style.opacity = 1;
+                document.getElementById(data[i] + "Sec").style.color = "#2ecc71";
+
             };
             // console.log(data);
         } else {
@@ -239,15 +243,16 @@ document.getElementById("usernameSearch").addEventListener("click", function(){
 });
 
 document.getElementById("languageSearch").addEventListener("click", function(){
-    var checkList = document.getElementsByClassName("languageCheck");
+    var checkList = document.getElementsByClassName("langSec");
     var languages = [];
     for(var i=0; i < checkList.length; i++){
-        if(checkList[i].checked) {
-            languages.push(checkList[i].value);
+        if(checkList[i].classList.contains("langSelected")) {
+            languages.push(checkList[i].id.replace("Lang", ""));
         }
     }
+    console.log(languages);
     var data = {
-        "callType": "languageSearch",
+        "callType": "languageSearchLimited",
         "languages": languages
     };
     var request = new XMLHttpRequest();
@@ -258,6 +263,7 @@ document.getElementById("languageSearch").addEventListener("click", function(){
     request.onload = function () {
         if(request.status >= 200 && request.status < 400) {
             var data = JSON.parse(request.responseText);
+            // console.log(data);
             drawUserLanguageTable(data);
             drawUserLanguagePieChart(data);
         } else {
@@ -270,6 +276,8 @@ function drawUserLanguageTable(data){
     var table = document.getElementById("languageSearchResultsBody");
     table.innerHTML = "";
     var fragment = document.createDocumentFragment();
+    var total = data.total;
+    var data = data.users;
     for(var i=0; i < data.length; i++){
         var tr = document.createElement("tr");
         var td = document.createElement("td");
@@ -278,6 +286,12 @@ function drawUserLanguageTable(data){
         fragment.appendChild(tr);
     }
     table.appendChild(fragment);
+    document.getElementById("languageSearchResults").style.display = "block";
+    console.log(total, data.length);
+    if(total > data.length){
+      // apparently this isn't the total list 
+      document.getElementById("fetchMoreButton").style.display="block";
+    }
 }
 
 function drawUserLanguagePieChart(data){
@@ -285,7 +299,7 @@ function drawUserLanguagePieChart(data){
     var pieData = [
         {
             "name" : "Selection",
-            "number": data.length,
+            "number": parseInt(data.total),
             "colorIndex": 0
         },
         {
@@ -344,3 +358,55 @@ function drawUserLanguagePieChart(data){
         .style("text-anchor", "middle")
         .text(function(d) { return d.data.name; });
 }
+
+var langList = document.getElementsByClassName("langSec");
+for (var i = langList.length - 1; i >= 0; i--) {
+  langList[i].addEventListener("click", function(){
+    toggleLangSelection(this);
+  });
+};
+
+function toggleLangSelection(element){
+  if(element.classList.contains("langSelected")){
+    element.classList.remove("langSelected");
+  } else {
+    element.classList.add("langSelected");
+  }
+}
+
+document.getElementById("fetchMoreButton").addEventListener("click", function(){
+  var checkList = document.getElementsByClassName("langSec");
+  var languages = [];
+  for(var i=0; i < checkList.length; i++){
+      if(checkList[i].classList.contains("langSelected")) {
+          languages.push(checkList[i].id.replace("Lang", ""));
+      }
+  }
+  var data = {
+      "callType": "languageSearch",
+      "languages": languages
+  };
+  var request = new XMLHttpRequest();
+  request.open("POST", "backend/main.php", true);
+  request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+  var test = JSON.stringify(data);
+  document.getElementById("languageLoader").style.display = "block";
+  request.send("data=" + JSON.stringify(data));
+  request.onload = function () {
+      if(request.status >= 200 && request.status < 400) {
+          var data = JSON.parse(request.responseText);
+          console.log(data);
+          drawUserLanguageTable(data);
+          drawUserLanguagePieChart(data);
+          document.getElementById("languageLoader").style.display = "none";
+      } else {
+          console.log("Oh noesz");
+      }
+  }
+});
+// document.getElementsByClassName("langSec").forEach(function(el){
+//   console.log(el);
+//   el.addEventListener("click", function(){
+//     console.log(el);
+//   });
+// });

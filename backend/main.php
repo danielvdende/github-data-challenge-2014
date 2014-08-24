@@ -18,6 +18,16 @@ if(isset($_POST["data"])){
 		    )
 		);
 		fetch_users_by_languages($data->languages);
+	} else if($data->callType == "languageSearchLimited"){
+		// replace cp by c++
+		// TODO: fix this up to be less hacky?
+		$data->languages = array_replace($data->languages,
+		    array_fill_keys(
+		        array_keys($data->languages, "cp"),
+		        "c++"
+		    )
+		);
+		fetch_users_by_languages_limited($data->languages);
 	}
 }
 
@@ -104,7 +114,59 @@ function fetch_users_by_languages($languages){
 		for($j=0; $j < count($results); $j++){
 			array_push($users, $results[$j]["login"]);
 		}
-		echo json_encode($users);
+		$list = [
+			"users" => $users,
+			"total" => count($users)
+		];
+		echo json_encode($list);
+	} catch(PDOException $e){
+		echo "db fetch error" . $e . "\n";
+	}
+}
+
+function fetch_users_by_languages_limited($languages){
+	global $dbuser;
+	global $dbpass;
+	$dbhost = "localhost";
+	$dbname = "github_vis";
+	$dbh = new PDO("mysql:host=$dbhost;dbname=$dbname", $dbuser, $dbpass);
+	$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+	$sql = "SELECT login FROM `languages` WHERE ";
+	for($i=0; $i < count($languages) - 1; $i++){
+		$sql .= "`" . $languages[$i] . "`=1 AND ";
+	}
+	$sql .= "`" . $languages[count($languages)-1] . "`=1";
+	$sql .= " LIMIT 10";
+
+	// send back the total number for creating correct pie chart.
+	$sql2 = "SELECT count(login) FROM `languages` WHERE ";
+	for($i=0; $i < count($languages) - 1; $i++){
+		$sql2 .= "`" . $languages[$i] . "`=1 AND ";
+	}
+	$sql2 .= "`" . $languages[count($languages)-1] . "`=1";
+	
+	try {
+		$query = $dbh->prepare($sql);
+		$query->execute();		
+		$results = $query->fetchAll();
+		
+		$users = [];
+		for($j=0; $j < count($results); $j++){
+			array_push($users, $results[$j]["login"]);
+		}
+		// var_dump($users);
+
+		$query = $dbh->prepare($sql2);
+		$query->execute();
+		$results = $query->fetchAll();
+		$totalNumber = $results[0][0];
+
+		$list = [
+			"users"=>$users,
+			"total"=>$totalNumber
+		];
+		echo json_encode($list);
 	} catch(PDOException $e){
 		echo "db fetch error" . $e . "\n";
 	}
@@ -112,7 +174,7 @@ function fetch_users_by_languages($languages){
 
 // fetch_user_data("007lva");
 
-// fetch_users_by_languages(["c#", "javascript"]);
+// fetch_users_by_languages_limited(["javascript"]);
 
 
 ?>
