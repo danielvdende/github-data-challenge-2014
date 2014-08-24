@@ -1,16 +1,13 @@
 <?php
 include '../../config.php';
-// TODO handle post/get data from the front end.
 if(isset($_POST["data"])){
 	$data = json_decode($_POST["data"]);
 	if($data->callType == "init"){
 		fetch_chord_data();
 	} else if($data->callType == "usernameSearch"){
-		// TODO: protect database by parsing through the user's input.
 		fetch_user_data($data->username);
 	} else if($data->callType == "languageSearch"){
 		// replace cp by c++
-		// TODO: fix this up to be less hacky?
 		$data->languages = array_replace($data->languages,
 		    array_fill_keys(
 		        array_keys($data->languages, "cp"),
@@ -20,7 +17,6 @@ if(isset($_POST["data"])){
 		fetch_users_by_languages($data->languages);
 	} else if($data->callType == "languageSearchLimited"){
 		// replace cp by c++
-		// TODO: fix this up to be less hacky?
 		$data->languages = array_replace($data->languages,
 		    array_fill_keys(
 		        array_keys($data->languages, "cp"),
@@ -56,7 +52,7 @@ function fetch_chord_data(){
 			}
 		}
 		$array = [
-			"final" => $final,
+			"finals" => $final,
 			"totals" => $totals
 		];
 		echo json_encode($array);

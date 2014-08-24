@@ -56,8 +56,7 @@ function initialize(){
   request.onload = function() {
       if (request.status >= 200 && request.status < 400){
         data = JSON.parse(request.responseText);
-        console.log(data);
-        parseMatrix(data.final, data.totals);
+        parseMatrix(data.finals, data.totals);
           document.getElementById("vis3Loader").style.display="none";
 } else {
     // We reached our target server, but it returned an error
@@ -76,8 +75,6 @@ function parseMatrix(finals,totals){
         totalSum += parseInt(totals[totalKeys[i]]);
     };
   var data = finals;
-  // console.log(totals);
-  // console.log(finals);
   var keys = Object.keys(data);
   var matrix = [];
   for(var i=0; i < keys.length; i++){
@@ -184,7 +181,6 @@ function parseMatrix(finals,totals){
   // Returns an event handler for fading a given chord group.
   function fade(opacity) {
     return function(g, i) {
-        console.log(g);
       svg.selectAll(".chord path")
       .filter(function(d) { return d.source.index != i && d.target.index != i; })
       .transition()
@@ -205,7 +201,6 @@ function getFormattedLanguageString(index){
 }
 
 function getTooltip(chord, totalSum){
-    console.log(totalSum);
     var string = getFormattedLanguageString(chord.source.index) + " - " + getFormattedLanguageString(chord.source.subindex) + "<br />";
     string += "Users: " + chord.source.value + "(" + ((chord.source.value / totalSum) * 100 ).toFixed(2) + "%)";
     return string;
@@ -223,7 +218,6 @@ document.getElementById("usernameSearch").addEventListener("click", function(){
     request.onload = function() {
         if (request.status >= 200 && request.status < 400){
             var data = JSON.parse(request.responseText);
-            console.log(data);
             var elements = document.getElementsByClassName("cardSec");
             for (var i = elements.length - 1; i >= 0; i--) {
                 elements[i].style.opacity = 0.1;
@@ -234,7 +228,6 @@ document.getElementById("usernameSearch").addEventListener("click", function(){
                 document.getElementById(data[i] + "Sec").style.color = "#2ecc71";
 
             };
-            // console.log(data);
         } else {
             // We reached our target server, but it returned an error
             console.log("Oh noesz");
@@ -250,7 +243,6 @@ document.getElementById("languageSearch").addEventListener("click", function(){
             languages.push(checkList[i].id.replace("Lang", ""));
         }
     }
-    console.log(languages);
     var data = {
         "callType": "languageSearchLimited",
         "languages": languages
@@ -263,7 +255,6 @@ document.getElementById("languageSearch").addEventListener("click", function(){
     request.onload = function () {
         if(request.status >= 200 && request.status < 400) {
             var data = JSON.parse(request.responseText);
-            // console.log(data);
             drawUserLanguageTable(data);
             drawUserLanguagePieChart(data);
         } else {
@@ -287,7 +278,6 @@ function drawUserLanguageTable(data){
     }
     table.appendChild(fragment);
     document.getElementById("languageSearchResults").style.display = "block";
-    console.log(total, data.length);
     if(total > data.length){
       // apparently this isn't the total list 
       document.getElementById("fetchMoreButton").style.display="block";
@@ -395,7 +385,6 @@ document.getElementById("fetchMoreButton").addEventListener("click", function(){
   request.onload = function () {
       if(request.status >= 200 && request.status < 400) {
           var data = JSON.parse(request.responseText);
-          console.log(data);
           drawUserLanguageTable(data);
           drawUserLanguagePieChart(data);
           document.getElementById("languageLoader").style.display = "none";
@@ -404,9 +393,3 @@ document.getElementById("fetchMoreButton").addEventListener("click", function(){
       }
   }
 });
-// document.getElementsByClassName("langSec").forEach(function(el){
-//   console.log(el);
-//   el.addEventListener("click", function(){
-//     console.log(el);
-//   });
-// });
