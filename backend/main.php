@@ -1,5 +1,6 @@
 <?php
-include 'config.php';
+include '../../config.php';
+
 if(isset($_POST["data"])){
 	$data = json_decode($_POST["data"]);
 	if($data->callType == "init"){
@@ -27,6 +28,9 @@ if(isset($_POST["data"])){
 	}
 }
 
+/**
+ * Fetch the data needed for the chord diagram
+ */
 function fetch_chord_data(){
 	global $dbuser;
 	global $dbpass;
@@ -44,6 +48,7 @@ function fetch_chord_data(){
 		$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 		for($i = 0; $i < count($results); $i++){
 			$key = $results[$i]["languages"];
+			// parse the values that were stored as: languageA|languageB
 			$values = explode("|", $key);
 			if($values[0] == $values[1]){
 				$final[$values[0]][$values[1]] = 0;
@@ -62,6 +67,10 @@ function fetch_chord_data(){
 	}
 }
 
+/**
+ * Return the data we have on a particular user
+ * @param  String $username The username we're looking for.
+ */
 function fetch_user_data($username){
 	global $dbuser;
 	global $dbpass;
@@ -89,6 +98,11 @@ function fetch_user_data($username){
 
 }
 
+/**
+ * Fetch the users that speak a given array of languages
+ * @param  Array $languages Array of strings of languages for which we are looking
+ * @return [type]            [description]
+ */
 function fetch_users_by_languages($languages){
 	global $dbuser;
 	global $dbpass;
@@ -97,6 +111,7 @@ function fetch_users_by_languages($languages){
 	$dbh = new PDO("mysql:host=$dbhost;dbname=$dbname", $dbuser, $dbpass);
 	$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+	// build up the query
 	$sql = "SELECT login FROM `languages` WHERE ";
 	for($i=0; $i < count($languages) - 1; $i++){
 		$sql .= "`" . $languages[$i] . "`=1 AND ";
@@ -111,6 +126,7 @@ function fetch_users_by_languages($languages){
 		for($j=0; $j < count($results); $j++){
 			array_push($users, $results[$j]["login"]);
 		}
+		// we include the count to figure out how the fetch more users button should work on the frontend.
 		$list = [
 			"users" => $users,
 			"total" => count($users)
@@ -121,6 +137,10 @@ function fetch_users_by_languages($languages){
 	}
 }
 
+/**
+ * The limited version of fetch_users_by_languages, fetches only the first 10 users to ensure somewhat speedy response.
+ * @param  Array $languages Array of language strings we are looking for.
+ */
 function fetch_users_by_languages_limited($languages){
 	global $dbuser;
 	global $dbpass;
@@ -168,12 +188,6 @@ function fetch_users_by_languages_limited($languages){
 		echo "db fetch error" . $e . "\n";
 	}
 }
-// echo "HELLO";
-// fetch_chord_data();
-// echo "bye";
-// fetch_user_data("007lva");
-
-// fetch_users_by_languages_limited(["javascript"]);
 
 
 ?>

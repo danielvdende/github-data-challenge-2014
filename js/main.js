@@ -1,3 +1,4 @@
+// global variables for language name representation.
 var globalLanguageIndexConverter = {
   "javascript" : 0,
   "ruby" : 1,
@@ -42,74 +43,89 @@ var globalFormattedLanguageIndices = {
     "Haskell" : 18,
     "Lua" : 19
 }
+var totalSum = 0;
 
 initialize();
 
+/**
+ * Initialize visualization 1, fetching the data using AJAX.
+ */
 function initialize(){
-  var request = new XMLHttpRequest();
-  var data = {
-    "callType": "init"
-  };
-  request.open('POST', 'backend/main.php', true);
-  request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-  request.send("data=" + JSON.stringify(data));
-  request.onload = function() {
-      if (request.status >= 200 && request.status < 400){
-        data = JSON.parse(request.responseText);
-        parseMatrix(data.finals, data.totals);
-          document.getElementById("vis3Loader").style.display="none";
-} else {
-    // We reached our target server, but it returned an error
-    console.log("Oh noesz");
+var request = new XMLHttpRequest();
+    var data = {
+        "callType": "init"
+    };
+    request.open('POST', 'backend/main.php', true);
+    request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+    request.send("data=" + JSON.stringify(data));
+    request.onload = function() {
+        if (request.status >= 200 && request.status < 400){
+            data = JSON.parse(request.responseText);
+            // parse the result and draw the chord diagram.
+            parseMatrix(data.finals, data.totals);
+            // hide the loading gif
+            document.getElementById("vis3Loader").style.display="none";
+        } else {
+            // We reached our target server, but it returned an error
+            console.log("Oh noesz");
+        }
+    };
 }
-};
 
-}
-
-var totalSum = 0;
-
+/**
+ * Parse the results of fetching the data for the chord diagram.
+ * @param  {Array} finals Array of Objects containing the information between all languages.
+ * @param  {Array} totals Array of Object, containing the information for the totals per language.
+ */
 function parseMatrix(finals,totals){
+    // First parse the matrix to the required form for the chord diagram.
     var totalKeys = Object.keys(totals);
     totalSum = 0;
+
     for (var i = totalKeys.length - 1; i >= 0; i--) {
         totalSum += parseInt(totals[totalKeys[i]]);
     };
-  var data = finals;
-  var keys = Object.keys(data);
-  var matrix = [];
-  for(var i=0; i < keys.length; i++){
-    var lang = [];
-    var langKeys = Object.keys(data[keys[i]]);
-    for(var j=0; j < langKeys.length; j++){
-        lang[globalLanguageIndexConverter[langKeys[j]]] = parseInt(data[keys[i]][langKeys[j]]);
+    var data = finals;
+    var keys = Object.keys(data);
+    var matrix = [];
+    var lang;
+    var langKeys;
+    for(var i=0; i < keys.length; i++){
+        lang = [];
+        langKeys = Object.keys(data[keys[i]]);
+        for(var j=0; j < langKeys.length; j++){
+            lang[globalLanguageIndexConverter[langKeys[j]]] = parseInt(data[keys[i]][langKeys[j]]);
+        }
+        matrix.push(lang);
     }
-    matrix.push(lang);
-  }
-  var chord = d3.layout.chord()
-  .padding(.05)
-  .sortSubgroups(d3.descending)
-  .matrix(matrix);
 
-  var width = 1000,
-  height = 1100,
-  innerRadius = Math.min(width, height) * .41,
-  outerRadius = innerRadius * 1.1;
-  r1 = innerRadius;
-    r0 = outerRadius;
+    // start drawing the chord diagram using D3.
+    var chord = d3.layout.chord()
+        .padding(.05)
+        .sortSubgroups(d3.descending)
+        .matrix(matrix);
 
-  // category20 works perfectly here, using 20 languages :)
-  var fill = d3.scale.category20();
+    // Constants used for the chord diagram.
+    var width = 1000,
+        height = 1100,
+        innerRadius = Math.min(width, height) * .41,
+        outerRadius = innerRadius * 1.1;
+        r1 = innerRadius;
+        r0 = outerRadius;
 
-  var svg = d3.select("#vis3").append("svg")
-  .attr("width", width)
-  .attr("height", height)
-  .append("g")
-  .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+    // category20 works perfectly here, using 20 languages :)
+    var fill = d3.scale.category20();
 
+    // create the SVG element.
+    var svg = d3.select("#vis3").append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .append("g")
+        .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
-  var arc = d3.svg.arc();
+    // create an arc object.
+    var arc = d3.svg.arc();
 
-  // no idea!
     svg.append("g").selectAll("path")
         .data(chord.groups)
         .enter().append("path")
@@ -119,7 +135,7 @@ function parseMatrix(finals,totals){
         .on("mouseover", fade(.1))
         .on("mouseout", fade(1));
 
-  // chords!
+    // chords!
     svg.append("g")
         .attr("class", "chord")
         .selectAll("path")
@@ -142,70 +158,79 @@ function parseMatrix(finals,totals){
     });
 
 
-  // language groups
-  var g = svg.selectAll("g.group")
-      .data(chord.groups)
-    .enter().append("svg:g")
-      .attr("class", "group")
-      .on("mouseover", fade(.02))
-      .on("mouseout", fade(.80));
+    // language groups
+    var g = svg.selectAll("g.group")
+        .data(chord.groups)
+        .enter().append("svg:g")
+        .attr("class", "group")
+        .on("mouseover", fade(.02))
+        .on("mouseout", fade(.80));
 
-  g.append("svg:path")
-      .style("stroke", function(d) { return fill(d.index); })
-      .style("fill", function(d) { return fill(d.index); })
-      .attr("d", arc);
+    g.append("svg:path")
+        .style("stroke", function(d) { return fill(d.index); })
+        .style("fill", function(d) { return fill(d.index); })
+        .attr("d", arc);
 
-  g.append("svg:text")
-      .each(function(d) { d.angle = (d.startAngle + d.endAngle) / 2; })
-      .attr("dy", ".35em")
-      .attr("text-anchor", function(d) { return d.angle > Math.PI ? "end" : null; })
-      .attr("transform", function(d) {
-        return "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
-            + "translate(" + (r0 + 26) + ")"
-            + (d.angle > Math.PI ? "rotate(180)" : "");
-      })
-      .text(function(d) { 
-        return getFormattedLanguageString(d.index);// + "(" + perc + "%)"; 
-    });
-  // Returns an array of tick angles and labels, given a group.
-  function groupTicks(d) {
-    var k = (d.endAngle - d.startAngle) / d.value;
-    return d3.range(0, d.value, 1000).map(function(v, i) {
-      return {
-        angle: v * k + d.startAngle,
-        label: i % 5 ? null : v / 1000 + "k"
-    };
-  });
-  }
+    g.append("svg:text")
+        .each(function(d) { d.angle = (d.startAngle + d.endAngle) / 2; })
+        .attr("dy", ".35em")
+        .attr("text-anchor", function(d) { return d.angle > Math.PI ? "end" : null; })
+        .attr("transform", function(d) {
+            return "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
+                + "translate(" + (r0 + 26) + ")"
+                + (d.angle > Math.PI ? "rotate(180)" : "");
+        })
+        .text(function(d) { 
+            return getFormattedLanguageString(d.index);// + "(" + perc + "%)"; 
+        });
 
-  // Returns an event handler for fading a given chord group.
-  function fade(opacity) {
-    return function(g, i) {
-      svg.selectAll(".chord path")
-      .filter(function(d) { return d.source.index != i && d.target.index != i; })
-      .transition()
-      .style("opacity", opacity);
-  };
-  }
+
+    // Returns an event handler for fading a given chord group.
+    function fade(opacity) {
+        return function(g, i) {
+            svg.selectAll(".chord path")
+                .filter(function(d) { return d.source.index != i && d.target.index != i; })
+                .transition()
+            .style("opacity", opacity);
+        };
+    }
 }
 
-
+/**
+ * Returns the language string associated with an index
+ * @param  {Int} index Index of the desired language
+ * @return {String}       Language Name
+ */
 function getLanguageString(index){
     var keys =  Object.keys(globalLanguageIndexConverter);
     return keys[index];
 }
 
+/**
+ * Returns the formatted language string for a given index
+ * @param  {Int} index Index of the desired language
+ * @return {String}       Formatted language string.
+ */
 function getFormattedLanguageString(index){
     var keys =  Object.keys(globalFormattedLanguageIndices);
     return keys[index];
 }
 
+/**
+ * Get a formatted tooltip string to show on mouseover.
+ * @param  {Chord Object} chord    The chord object that has been 'moused over'
+ * @param  {Int} totalSum Total sum of the language in question (used for the percentage shown in the tooltip)
+ * @return {String}          The tooltip string that will be shown.
+ */
 function getTooltip(chord, totalSum){
     var string = getFormattedLanguageString(chord.source.index) + " - " + getFormattedLanguageString(chord.source.subindex) + "<br />";
     string += "Users: " + chord.source.value + "(" + ((chord.source.value / totalSum) * 100 ).toFixed(2) + "%)";
     return string;
 }
 
+/**
+ * Handle the username search (i.e. the usercard)
+ */
 document.getElementById("usernameSearch").addEventListener("click", function(){
     var request = new XMLHttpRequest();
     var data = {
@@ -219,10 +244,12 @@ document.getElementById("usernameSearch").addEventListener("click", function(){
         if (request.status >= 200 && request.status < 400){
             var data = JSON.parse(request.responseText);
             var elements = document.getElementsByClassName("cardSec");
+            // reset the colour for all languages initially.
             for (var i = elements.length - 1; i >= 0; i--) {
                 elements[i].style.opacity = 0.1;
                 elements[i].style.color = "#000";
             };
+            // colour the languages the user 'speaks'
             for (var i = data.length - 1; i >= 0; i--) {
                 document.getElementById(data[i] + "Sec").style.opacity = 1;
                 document.getElementById(data[i] + "Sec").style.color = "#2ecc71";
@@ -235,6 +262,9 @@ document.getElementById("usernameSearch").addEventListener("click", function(){
     }
 });
 
+/**
+ * Handler for the language searching (i.e. finding users that speak a language)
+ */
 document.getElementById("languageSearch").addEventListener("click", function(){
     var checkList = document.getElementsByClassName("langSec");
     var languages = [];
@@ -255,6 +285,7 @@ document.getElementById("languageSearch").addEventListener("click", function(){
     request.onload = function () {
         if(request.status >= 200 && request.status < 400) {
             var data = JSON.parse(request.responseText);
+            // draw the pie chart and the table.
             drawUserLanguageTable(data);
             drawUserLanguagePieChart(data);
         } else {
@@ -263,6 +294,10 @@ document.getElementById("languageSearch").addEventListener("click", function(){
     }
 });
 
+/**
+ * Draw the list of users that speak the given set of languages
+ * @param  {Array} data Array containing data about the totals that speak this selection of languages and the list of users itself.
+ */
 function drawUserLanguageTable(data){
     var table = document.getElementById("languageSearchResultsBody");
     table.innerHTML = "";
@@ -284,6 +319,10 @@ function drawUserLanguageTable(data){
     }
 }
 
+/**
+ * Draw the pie chart that indicates how many people speak the user's selection.
+ * @param  {Array} data Array of objects containing information on the users
+ */
 function drawUserLanguagePieChart(data){
     document.getElementById("languageUserSearch").innerHTML = "";
     var pieData = [
@@ -356,14 +395,21 @@ for (var i = langList.length - 1; i >= 0; i--) {
   });
 };
 
+/**
+ * Helper function that allows easy class manipulation of a clicked element.
+ * @param  {DOM Element} element The DOM element that was clicked
+ */
 function toggleLangSelection(element){
-  if(element.classList.contains("langSelected")){
-    element.classList.remove("langSelected");
-  } else {
-    element.classList.add("langSelected");
-  }
+    if(element.classList.contains("langSelected")){
+        element.classList.remove("langSelected");
+    } else {
+        element.classList.add("langSelected");
+    }
 }
 
+/**
+ * Handler for the fetch more button (i.e. if a user wants to see more than the first 10 results).
+ */
 document.getElementById("fetchMoreButton").addEventListener("click", function(){
   var checkList = document.getElementsByClassName("langSec");
   var languages = [];
